@@ -12,66 +12,185 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_image"
-        tools:ignore="VisualLintButtonSize"/>
+        tools:ignore="VisualLintButtonSize,MenuTitle"/>
 
     <Button
         android:id="@+id/buttonAudio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_audio"
-        tools:ignore="VisualLintButtonSize"/>
+        tools:ignore="VisualLintButtonSize,MenuTitle"/>
 
     <Button
         android:id="@+id/buttonVideo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_video"
-        tools:ignore="VisualLintButtonSize" />
+        tools:ignore="VisualLintButtonSize,MenuTitle"/>
 
+    <LinearLayout
+        android:id="@+id/audioControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone"
+        tools:ignore="MenuTitle">
+
+        <TextView
+            android:id="@+id/audioInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/audio_file_not_selected"
+            android:textAlignment="center"
+            android:padding="8dp"/>
+
+        <SeekBar
+            android:id="@+id/audioSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/audioCurrentTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/default_time"
+                android:textAlignment="textStart"/>
+
+            <TextView
+                android:id="@+id/audioTotalTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/default_time"
+                android:textAlignment="textEnd"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/audioPlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/play"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/audioPause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/pause"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/audioStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/stop"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- VideoView -->
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"/>
 
     <LinearLayout
+        android:id="@+id/videoControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone"
+        tools:ignore="MenuTitle">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/start"
-            android:layout_width="0dp"
+        <SeekBar
+            android:id="@+id/videoSeekBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/play"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            app:strokeColor="@color/black"
-            app:strokeWidth="1dp"
-            tools:ignore="VisualLintButtonSize"/>
+            android:max="100"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/pause"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/pause"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            app:strokeColor="@color/black"
-            app:strokeWidth="1dp"
-            tools:ignore="VisualLintButtonSize"/>
+            android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/stop"
-            android:layout_width="0dp"
+            <TextView
+                android:id="@+id/videoCurrentTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/default_time"
+                android:textAlignment="textStart"/>
+
+            <TextView
+                android:id="@+id/videoTotalTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/default_time"
+                android:textAlignment="textEnd"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/stop"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            app:strokeColor="@color/black"
-            app:strokeWidth="1dp"
-            tools:ignore="VisualLintButtonSize"/>
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/videoPlay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/play"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/videoPause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/pause"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/videoStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/stop"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"/>
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -5,9 +5,13 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -25,10 +29,19 @@ public class MainActivity extends AppCompatActivity {
     private boolean permissionGranted;
 
     private MediaPlayer mPlayer;
-    private Button startButton, pauseButton, stopButton;
     private VideoView videoView;
     private String setType;
     private ImageView imageView;
+
+    private SeekBar audioSeekBar, videoSeekBar;
+    private TextView audioCurrentTime, audioTotalTime, videoCurrentTime, videoTotalTime;
+    private TextView audioInfo;
+    private LinearLayout audioControls, videoControls;
+    private Button audioPlay, audioPause, audioStop, videoPlay, videoPause, videoStop;
+
+    private Handler handler = new Handler();
+    private boolean isAudioPlaying = false;
+    private boolean isVideoPlaying = false;
 
     private static final int PICKFILE_RESULT_CODE = 1;
 
@@ -41,26 +54,87 @@ public class MainActivity extends AppCompatActivity {
             checkPermissions();
         }
 
-        startButton = findViewById(R.id.start);
-        pauseButton = findViewById(R.id.pause);
-        stopButton = findViewById(R.id.stop);
+        initViews();
+
+        setClickListeners();
+    }
+
+    private void initViews() {
         videoView = findViewById(R.id.videoView);
 
-        pauseButton.setEnabled(false);
-        stopButton.setEnabled(false);
+        audioControls = findViewById(R.id.audioControls);
+        audioSeekBar = findViewById(R.id.audioSeekBar);
+        audioCurrentTime = findViewById(R.id.audioCurrentTime);
+        audioTotalTime = findViewById(R.id.audioTotalTime);
+        audioInfo = findViewById(R.id.audioInfo);
+        audioPlay = findViewById(R.id.audioPlay);
+        audioPause = findViewById(R.id.audioPause);
+        audioStop = findViewById(R.id.audioStop);
 
-        // ДОБАВЛЕНО: Получаем ссылки на кнопки выбора файлов
+        videoControls = findViewById(R.id.videoControls);
+        videoSeekBar = findViewById(R.id.videoSeekBar);
+        videoCurrentTime = findViewById(R.id.videoCurrentTime);
+        videoTotalTime = findViewById(R.id.videoTotalTime);
+        videoPlay = findViewById(R.id.videoPlay);
+        videoPause = findViewById(R.id.videoPause);
+        videoStop = findViewById(R.id.videoStop);
+
+        audioPause.setEnabled(false);
+        audioStop.setEnabled(false);
+        videoPause.setEnabled(false);
+        videoStop.setEnabled(false);
+    }
+
+    private void setClickListeners() {
         Button buttonImage = findViewById(R.id.buttonImage);
         Button buttonAudio = findViewById(R.id.buttonAudio);
         Button buttonVideo = findViewById(R.id.buttonVideo);
 
-        // ДОБАВЛЕНО: Устанавливаем обработчики кликов
         buttonImage.setOnClickListener(this::onClick);
         buttonAudio.setOnClickListener(this::onClick);
         buttonVideo.setOnClickListener(this::onClick);
-        startButton.setOnClickListener(this::play);
-        pauseButton.setOnClickListener(this::pause);
-        stopButton.setOnClickListener(this::stop);
+
+        audioPlay.setOnClickListener(this::audioPlay);
+        audioPause.setOnClickListener(this::audioPause);
+        audioStop.setOnClickListener(this::audioStop);
+
+        videoPlay.setOnClickListener(this::videoPlay);
+        videoPause.setOnClickListener(this::videoPause);
+        videoStop.setOnClickListener(this::videoStop);
+
+        setupSeekBars();
+    }
+
+    private void setupSeekBars() {
+        audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mPlayer != null) {
+                    mPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        videoSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && videoView.isPlaying()) {
+                    videoView.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
     }
 
     public boolean isExternalStorageWriteable() {
@@ -121,20 +195,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICKFILE_RESULT_CODE && resultCode == RESULT_OK) {
             if (setType.equals("audio/*")) {
-                mPlayer = MediaPlayer.create(this, data.getData());
-                mPlayer.start();
-                pauseButton.setEnabled(true);
-                stopButton.setEnabled(true);
-                mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        stopPlay();
-                    }
-                });
+                setupAudioPlayer(data.getData());
             }
             if (setType.equals("video/*")) {
-                videoView.setVideoURI(data.getData());
-                videoView.start();
+                setupVideoPlayer(data.getData());
             }
             if (setType.equals("image/*")) {
                 setContentView(R.layout.imageview);
@@ -144,34 +208,197 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void play(View view) {
-        mPlayer.start();
-        startButton.setEnabled(false);
-        pauseButton.setEnabled(true);
-        stopButton.setEnabled(true);
-    }
-
-    public void pause(View view) {
-        mPlayer.pause();
-        startButton.setEnabled(true);
-        pauseButton.setEnabled(false);
-        stopButton.setEnabled(true);
-    }
-
-    public void stop(View view) {
-        stopPlay();
-    }
-
-    private void stopPlay() {
-        mPlayer.stop();
-        pauseButton.setEnabled(false);
-        stopButton.setEnabled(false);
+    private void setupAudioPlayer(Uri audioUri) {
         try {
-            mPlayer.prepare();
-            mPlayer.seekTo(0);
-            startButton.setEnabled(true);
-        } catch (Throwable t) {
-            Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            if (mPlayer != null) {
+                mPlayer.release();
+            }
+
+            mPlayer = MediaPlayer.create(this, audioUri);
+            mPlayer.setOnCompletionListener(mp -> stopAudioPlay());
+
+            audioSeekBar.setMax(mPlayer.getDuration());
+            audioTotalTime.setText(formatTime(mPlayer.getDuration()));
+            audioInfo.setText("Аудиофайл загружен");
+
+            audioControls.setVisibility(View.VISIBLE);
+            videoControls.setVisibility(View.GONE);
+            videoView.setVisibility(View.GONE);
+
+            startAudioProgressUpdate();
+
+            audioPlay.setEnabled(true);
+            audioPause.setEnabled(false);
+            audioStop.setEnabled(true);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Ошибка загрузки аудио: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void setupVideoPlayer(Uri videoUri) {
+        try {
+            videoView.setVideoURI(videoUri);
+
+            videoControls.setVisibility(View.VISIBLE);
+            audioControls.setVisibility(View.GONE);
+            videoView.setVisibility(View.VISIBLE);
+
+            videoPlay.setEnabled(true);
+            videoPause.setEnabled(false);
+            videoStop.setEnabled(true);
+
+            videoView.setOnPreparedListener(mp -> {
+                videoSeekBar.setMax(videoView.getDuration());
+                videoTotalTime.setText(formatTime(videoView.getDuration()));
+                startVideoProgressUpdate();
+            });
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Ошибка загрузки видео: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void audioPlay(View view) {
+        if (mPlayer != null && !mPlayer.isPlaying()) {
+            mPlayer.start();
+            audioPlay.setEnabled(false);
+            audioPause.setEnabled(true);
+            isAudioPlaying = true;
+            startAudioProgressUpdate();
+        }
+    }
+
+    public void audioPause(View view) {
+        if (mPlayer != null && mPlayer.isPlaying()) {
+            mPlayer.pause();
+            audioPlay.setEnabled(true);
+            audioPause.setEnabled(false);
+            isAudioPlaying = false;
+        }
+    }
+
+    public void audioStop(View view) {
+        stopAudioPlay();
+    }
+
+    private void stopAudioPlay() {
+        if (mPlayer != null) {
+            mPlayer.stop();
+            try {
+                mPlayer.prepare();
+                mPlayer.seekTo(0);
+                audioSeekBar.setProgress(0);
+                audioCurrentTime.setText(formatTime(0));
+
+                audioPlay.setEnabled(true);
+                audioPause.setEnabled(false);
+                audioStop.setEnabled(false);
+                isAudioPlaying = false;
+
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void videoPlay(View view) {
+        if (!videoView.isPlaying()) {
+            // Если видео почти закончилось, сбрасываем на начало
+            if (videoView.getCurrentPosition() >= videoView.getDuration() - 100) {
+                videoView.seekTo(0);
+            }
+            videoView.start();
+            videoPlay.setEnabled(false);
+            videoPause.setEnabled(true);
+            videoStop.setEnabled(true);
+            isVideoPlaying = true;
+            startVideoProgressUpdate();
+        }
+    }
+
+    public void videoPause(View view) {
+        if (videoView.isPlaying()) {
+            videoView.pause();
+            videoPlay.setEnabled(true);
+            videoPause.setEnabled(false);
+            isVideoPlaying = false;
+        }
+    }
+
+    public void videoStop(View view) {
+        if (videoView.isPlaying() || videoView.getCurrentPosition() > 0) {
+            // Получаем текущую позицию и длительность
+            int currentPosition = videoView.getCurrentPosition();
+            int duration = videoView.getDuration();
+
+            videoView.pause();
+            videoView.seekTo(0); // Сбрасываем на начало
+
+            videoSeekBar.setProgress(0);
+            videoCurrentTime.setText(formatTime(0));
+
+            videoPlay.setEnabled(true);
+            videoPause.setEnabled(false);
+            videoStop.setEnabled(false);
+            isVideoPlaying = false;
+
+            // Останавливаем обновление прогресса
+            handler.removeCallbacks(videoProgressUpdater);
+        }
+    }
+
+    private void startAudioProgressUpdate() {
+        handler.postDelayed(audioProgressUpdater, 1000);
+    }
+
+    private void startVideoProgressUpdate() {
+        handler.postDelayed(videoProgressUpdater, 1000);
+    }
+
+    private Runnable audioProgressUpdater = new Runnable() {
+        public void run() {
+            if (mPlayer != null && isAudioPlaying) {
+                int currentPosition = mPlayer.getCurrentPosition();
+                audioSeekBar.setProgress(currentPosition);
+                audioCurrentTime.setText(formatTime(currentPosition));
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
+
+    private Runnable videoProgressUpdater = new Runnable() {
+        public void run() {
+            if (videoView.isPlaying()) {
+                int currentPosition = videoView.getCurrentPosition();
+                int duration = videoView.getDuration();
+
+                videoSeekBar.setProgress(currentPosition);
+                videoCurrentTime.setText(formatTime(currentPosition));
+
+                // Если видео закончилось, останавливаем
+                if (currentPosition >= duration - 100) {
+                    videoStop(null);
+                } else {
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        }
+    };
+
+    private String formatTime(int milliseconds) {
+        int seconds = (milliseconds / 1000) % 60;
+        int minutes = (milliseconds / (1000 * 60)) % 60;
+        return String.format("%d:%02d", minutes, seconds);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mPlayer != null) {
+            mPlayer.release();
+        }
+        handler.removeCallbacks(audioProgressUpdater);
+        handler.removeCallbacks(videoProgressUpdater);
     }
 }

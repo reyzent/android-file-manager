@@ -6,4 +6,9 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
+    <string name="audio_file_not_selected">Аудиофайл не выбран</string>
+    <string name="default_time">0:00</string>
+    <string name="file_selection_buttons">Кнопки выбора файлов</string>
+    <string name="audio_control_panel">Панель управления аудио</string>
+    <string name="video_control_panel">Панель управления видео</string>
 </resources>
