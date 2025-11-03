@@ -3,12 +3,18 @@
     <string name="select_audio">Выбрать аудио</string>
     <string name="select_video">Выбрать видео</string>
     <string name="select_image">Выбрать изображение</string>
-    <string name="play">Play</string>
-    <string name="pause">Pause</string>
-    <string name="stop">Stop</string>
+    <string name="play">Воспроизвести</string>
+    <string name="pause">Пауза</string>
+    <string name="stop">Стоп</string>
     <string name="audio_file_not_selected">Аудиофайл не выбран</string>
     <string name="default_time">0:00</string>
     <string name="file_selection_buttons">Кнопки выбора файлов</string>
     <string name="audio_control_panel">Панель управления аудио</string>
     <string name="video_control_panel">Панель управления видео</string>
+    <string name="history_title">История файлов</string>
+    <string name="recent_files">Недавние файлы</string>
+    <string name="no_recent_files">Нет недавних файлов</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="rewind_back">-10 сек</string>
+    <string name="rewind_forward">+10 сек</string>
 </resources>
