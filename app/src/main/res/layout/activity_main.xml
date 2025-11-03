@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,22 +11,22 @@
         android:id="@+id/buttonImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выбрать изображение"
-        android:onClick="onClick"/>
+        android:text="@string/select_image"
+        tools:ignore="VisualLintButtonSize"/>
 
     <Button
         android:id="@+id/buttonAudio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выбрать аудио"
-        android:onClick="onClick"/>
+        android:text="@string/select_audio"
+        tools:ignore="VisualLintButtonSize"/>
 
     <Button
         android:id="@+id/buttonVideo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выбрать видео"
-        android:onClick="onClick"/>
+        android:text="@string/select_video"
+        tools:ignore="VisualLintButtonSize" />
 
     <VideoView
         android:id="@+id/videoView"
@@ -38,31 +40,38 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/start"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Play"
-            android:onClick="play"/>
+            android:text="@string/play"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp"
+            tools:ignore="VisualLintButtonSize"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/pause"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Pause"
-            android:onClick="pause"/>
+            android:text="@string/pause"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp"
+            tools:ignore="VisualLintButtonSize"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/stop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Stop"
-            android:onClick="stop"/>
+            android:text="@string/stop"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="@color/black"
+            app:strokeWidth="1dp"
+            tools:ignore="VisualLintButtonSize"/>
     </LinearLayout>
 
 </LinearLayout>
-
-

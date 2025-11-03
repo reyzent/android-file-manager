@@ -48,6 +48,19 @@ public class MainActivity extends AppCompatActivity {
 
         pauseButton.setEnabled(false);
         stopButton.setEnabled(false);
+
+        // ДОБАВЛЕНО: Получаем ссылки на кнопки выбора файлов
+        Button buttonImage = findViewById(R.id.buttonImage);
+        Button buttonAudio = findViewById(R.id.buttonAudio);
+        Button buttonVideo = findViewById(R.id.buttonVideo);
+
+        // ДОБАВЛЕНО: Устанавливаем обработчики кликов
+        buttonImage.setOnClickListener(this::onClick);
+        buttonAudio.setOnClickListener(this::onClick);
+        buttonVideo.setOnClickListener(this::onClick);
+        startButton.setOnClickListener(this::play);
+        pauseButton.setOnClickListener(this::pause);
+        stopButton.setOnClickListener(this::stop);
     }
 
     public boolean isExternalStorageWriteable() {
@@ -162,5 +175,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
-
